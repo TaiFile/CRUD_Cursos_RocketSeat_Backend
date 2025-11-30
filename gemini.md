@@ -1,71 +1,163 @@
-# System Design: Backend
+# Gemini Code Companion: CRUD Courses API
 
-## Architecture: Clean Architecture with Slices
+Este documento serve como a documentação central para a **CRUD Courses API**, uma aplicação Spring Boot para gerenciar cursos educacionais. Ele é mantido pelo Gemini para refletir o estado atual do código.
 
-This project utilizes a clean architecture approach, organized into "slices" for each feature. This promotes modularity, separation of concerns, and maintainability. Each slice contains all the necessary acomponents for a specific domain entity.
+## 1. Visão Geral do Projeto
 
-### Slice Structure
+A **CRUD Courses API** é um serviço de backend que fornece endpoints RESTful para realizar operações de Criar, Ler, Atualizar e Deletar (CRUD) em uma entidade `Course`. A aplicação é construída com as melhores práticas, incluindo uma arquitetura limpa, versionamento de banco de dados e tratamento de erros robusto.
 
-Each entity has its own dedicated folder (slice) with the following structure:
+## 2. Tecnologias e Ferramentas
 
-```
-/src
-  /main
-    /java
-      /com
-        /app
-          /features
-            /entity_name
-              ├── controller
-              │   └── EntityNameController.java
-              ├── service
-              │   └── EntityNameService.java
-              ├── repository
-              │   └── EntityNameRepository.java
-              ├── dto
-              │   ├── EntityNameRequestDTO.java
-              │   └── EntityNameResponseDTO.java
-              ├── exception
-              │   ├── EntityNameNotFoundException.java
-              │   └── ... (other custom exceptions)
-              └── model
-                  └── EntityName.java
-```
+*   **Java 17**: Linguagem de programação principal.
+*   **Spring Boot 3.2.5**: Framework da aplicação.
+    *   **Spring Web**: Para construir APIs RESTful.
+    *   **Spring Data JPA**: Para a camada de persistência de dados.
+    *   **Spring Boot Validation**: Para validação de dados de entrada.
+*   **Maven**: Gerenciador de dependências e build.
+*   **PostgreSQL**: Banco de dados relacional.
+*   **Docker**: Para containerizar e gerenciar o banco de dados.
+*   **Flyway**: Para versionamento e migração do esquema do banco de dados.
+*   **Lombok**: Para reduzir código boilerplate (getters, setters, etc.).
 
-### Component Descriptions
+## 3. Arquitetura do Sistema
 
-*   **`controller`**: Contains the REST API endpoints. It receives HTTP requests, validates them, and calls the appropriate service methods.
-*   **`service`**: Implements the business logic. It orchestrates data access and manipulation, and it's where the core application logic resides.
-*   **`repository`**: Provides an abstraction over the database. It handles all the CRUD (Create, Read, Update, Delete) operations for the entity.
-*   **`dto` (Data Transfer Object)**: Defines the data structures for API requests and responses. This helps to decouple the API from the internal data model.
-*   **`exception`**: Contains custom exception classes for handling specific error scenarios.
-*   **`model`**: Represents the domain entity, which is mapped to a database table.
+A aplicação utiliza uma **arquitetura limpa em camadas (slices)**, onde cada funcionalidade principal (`feature`) é um módulo autônomo. Isso promove alta coesão, baixo acoplamento e manutenibilidade.
 
-## Example: `Course` Entity
-
-As an example, let's consider a `Course` entity. The slice for this entity looks like this:
+### Estrutura da Feature `course`
 
 ```
-/src
-  /main
-    /java
-      /com
-        /app
-          /features
-            /course
-              ├── controller
-              │   └── CourseController.java
-              ├── service
-              │   └── CourseService.java
-              ├── repository
-              │   └── CourseRepository.java
-              ├── dto
-              │   ├── CourseRequestDTO.java
-              │   └── CourseResponseDTO.java
-              ├── exception
-              │   └── CourseNotFoundException.java
-              └── model
-                  └── Course.java
+/src/main/java/com/app/
+├── CrudCoursesApplication.java  // Ponto de entrada
+├── exception
+│   └── ApplicationExceptionHandler.java // Handler global de exceções
+└── features/course
+    ├── controller  // Camada de API (REST)
+    │   └── CourseController.java
+    ├── dtos        // Objetos de Transferência de Dados
+    │   ├── CourseRequestDTO.java
+    │   └── CourseResponseDTO.java
+    ├── exception   // Exceções específicas da feature
+    │   └── CourseNotFoundException.java
+    ├── mapper      // Mapeamento entre Entidade e DTOs
+    │   └── CourseMapper.java
+    ├── model       // Entidade do banco de dados (JPA)
+    │   └── Course.java
+    ├── repository  // Camada de acesso a dados
+    │   └── CourseRepository.java
+    └── service     // Camada de lógica de negócio
+        └── CourseService.java
 ```
 
-This structure ensures that all the code related to the `Course` entity is organized in a single, cohesive module.
+## 4. Gerenciamento do Banco de Dados (SQL)
+
+O SQL na aplicação é gerenciado por duas ferramentas distintas:
+
+1.  **Flyway (Estrutura - DDL)**:
+    *   **Onde:** `src/main/resources/db/migration`
+    *   **O que faz:** Gerencia a criação e alteração da estrutura do banco de dados (tabelas, colunas) através de scripts SQL versionados (ex: `V1__Create_course_table.sql`). É executado na inicialização da aplicação.
+
+2.  **Hibernate / Spring Data JPA (Dados - DML)**:
+    *   **Onde:** Gerado em tempo de execução.
+    *   **O que faz:** Cria os comandos `INSERT`, `SELECT`, `UPDATE`, `DELETE` com base nos métodos chamados no `CourseRepository` (ex: `repository.save()`, `repository.findById()`).
+    *   **Visualização:** O SQL gerado é impresso no console porque a propriedade `spring.jpa.show-sql=true` está ativa no `application.properties`.
+
+## 5. Setup e Instalação
+
+1.  **Pré-requisitos**:
+    *   Java 17 (ou superior)
+    *   Maven
+    *   Docker e Docker Compose (com o Docker Desktop em execução)
+
+2.  **Iniciar o Banco de Dados**:
+    Execute o comando na raiz do projeto para iniciar o PostgreSQL.
+    ```sh
+    docker-compose up -d
+    ```
+
+3.  **Executar a Aplicação**:
+    Use o wrapper do Maven para compilar e executar o projeto.
+    ```sh
+    mvn spring-boot:run
+    ```
+    A API estará disponível em `http://localhost:8080`.
+
+## 6. Documentação da API
+
+Todos os endpoints estão sob o prefixo `/courses`.
+
+---
+
+### `POST /`
+Cria um novo curso.
+
+*   **Request Body**:
+    ```json
+    {
+      "name": "API com Spring Boot",
+      "category": "Backend"
+    }
+    ```
+*   **Response (201 Created)**:
+    ```json
+    {
+      "id": "...",
+      "name": "API com Spring Boot",
+      "category": "Backend",
+      "createdAt": "2023-11-30 22:00:00"
+    }
+    ```
+
+---
+
+### `GET /`
+Lista todos os cursos.
+
+*   **Response (200 OK)**:
+    ```json
+    [
+      {
+        "id": "...",
+        "name": "API com Spring Boot",
+        "category": "Backend",
+        "createdAt": "..."
+      }
+    ]
+    ```
+
+---
+
+### `GET /{id}`
+Busca um curso pelo seu ID (UUID).
+
+*   **Response (200 OK)**: O objeto do curso.
+*   **Response (404 Not Found)**: Se o curso não for encontrado.
+
+---
+
+### `PUT /{id}`
+Atualiza um curso existente.
+
+*   **Request Body**:
+    ```json
+    {
+      "name": "API com Spring Boot e Testes",
+      "category": "Backend Avançado"
+    }
+    ```
+*   **Response (200 OK)**: O objeto do curso atualizado.
+*   **Response (404 Not Found)**: Se o curso não for encontrado.
+
+---
+
+### `DELETE /{id}`
+Deleta um curso.
+
+*   **Response (204 No Content)**: Em caso de sucesso.
+*   **Response (404 Not Found)**: Se o curso não for encontrado.
+
+## 7. Tratamento de Erros
+
+*   **`ApplicationExceptionHandler`**: Intercepta todas as exceções não tratadas e retorna uma resposta JSON padronizada, evitando o vazamento de detalhes internos e facilitando o debug.
+*   **`CourseNotFoundException`**: Exceção customizada que retorna um status `404 Not Found` quando um curso não é encontrado.
+*   **Validação**: O Spring Boot Validation retorna um status `400 Bad Request` automaticamente se os campos no `CourseRequestDTO` (`name`, `category`) forem inválidos.
+```

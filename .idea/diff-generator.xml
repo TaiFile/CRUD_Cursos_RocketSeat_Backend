@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DiffGenerationConfig">
+    <option name="snapshotDb" value="false" />
+    <option name="snapshotModelValue" value="crud-courses:crud-courses" />
+    <option name="sourceModelValue" value="crud-courses:entityManagerFactory" />
+    <option name="targetDbValue" value="8aec9f3f-6626-4f1a-b8fd-a58fd9c9f04c" />
+  </component>
+</project>

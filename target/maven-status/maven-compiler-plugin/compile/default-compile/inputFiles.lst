@@ -1,0 +1,9 @@
+C:\Users\TaichiAdmin\IdeaProjects\CRUD_Cursos_RocketSeat_Backend\src\main\java\com\app\features\course\dtos\CourseRequestDTO.java
+C:\Users\TaichiAdmin\IdeaProjects\CRUD_Cursos_RocketSeat_Backend\src\main\java\com\app\features\course\dtos\CourseResponseDTO.java
+C:\Users\TaichiAdmin\IdeaProjects\CRUD_Cursos_RocketSeat_Backend\src\main\java\com\app\features\course\exception\CourseNotExistsException.java
+C:\Users\TaichiAdmin\IdeaProjects\CRUD_Cursos_RocketSeat_Backend\src\main\java\com\app\features\course\controller\CourseController.java
+C:\Users\TaichiAdmin\IdeaProjects\CRUD_Cursos_RocketSeat_Backend\src\main\java\com\app\features\course\repository\CourseRepository.java
+C:\Users\TaichiAdmin\IdeaProjects\CRUD_Cursos_RocketSeat_Backend\src\main\java\com\app\features\course\model\Course.java
+C:\Users\TaichiAdmin\IdeaProjects\CRUD_Cursos_RocketSeat_Backend\src\main\java\com\app\Application.java
+C:\Users\TaichiAdmin\IdeaProjects\CRUD_Cursos_RocketSeat_Backend\src\main\java\com\app\features\course\exception\CourseNotFoundException.java
+C:\Users\TaichiAdmin\IdeaProjects\CRUD_Cursos_RocketSeat_Backend\src\main\java\com\app\features\course\service\CourseService.java
